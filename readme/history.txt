@@ -1,6 +1,8 @@
 
-1.0.1
-minor
+2017.03.15
++ lexer-list option is lower-case, add "ini files,properties"
++ skip word which is under caret (caret in middle or end)
+* list prefix chg to "w"
 
-1.0.0 (jan 2016)
+2016.01.02
 init
