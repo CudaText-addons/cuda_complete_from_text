@@ -4,13 +4,13 @@ of words from current file, which start with the current word (before caret).
 eg, if you typed "ri", it may give "riddle", "righter" etc.
 
 plugin has options: 
-- minimal word len
-- lexers list (for which to work)
+- minimal word len (words of smaller len won't show in list)
+- lexers list (for which to work), specify none-lexer as '-'
 - case-sensitive
 
 to edit options, open plugin's source (by Addon Manager) and options are 
 at the top of __init__.py.
 
 
-author: Alexey (CudaText)
-license: MIT
+Author: Alexey (CudaText)
+License: MIT

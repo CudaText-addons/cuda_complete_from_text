@@ -1,6 +1,7 @@
 
 2017.03.15
-+ lexer-list option is lower-case, add "ini files,properties"
++ lexer-list option is lower-case
++ lexer-list, added "ini files,properties"
 + skip word which is under caret (caret in middle or end)
 * list prefix chg to "w"
 
