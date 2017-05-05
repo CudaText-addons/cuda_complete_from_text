@@ -1,4 +1,7 @@
 
+2017.05.05
+- fix: not worked on words with "_"
+
 2017.03.15
 + lexer-list option is lower-case
 + lexer-list, added "ini files,properties"

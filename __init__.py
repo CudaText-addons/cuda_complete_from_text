@@ -8,6 +8,9 @@ option_case_sens = False
 prefix = 'w'
 
 
+def isword(s):
+    return s.isalnum() or s=='_'
+
 def is_text_with_begin(s, begin):
     if option_case_sens:
         return s.startswith(begin)
@@ -28,12 +31,12 @@ def get_word(x, y):
     if x==0: return
 
     x0 = x
-    while (x0>0) and (ed.get_text_substr(x0-1, y, x0, y).isalnum()):
+    while (x0>0) and isword(ed.get_text_substr(x0-1, y, x0, y)):
         x0-=1
     text1 = ed.get_text_substr(x0, y, x, y)
 
     x0 = x
-    while (ed.get_text_substr(x0, y, x0+1, y).isalnum()):
+    while isword(ed.get_text_substr(x0, y, x0+1, y)):
         x0+=1
     text2 = ed.get_text_substr(x, y, x0, y)
 
