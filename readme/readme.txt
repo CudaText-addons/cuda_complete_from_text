@@ -1,16 +1,18 @@
-Plugin for CudaText.
-handles auto-complete command (Ctrl+Space). gives completion listbox with list 
-of words from current file, which start with the current word (before caret). 
-eg, if you typed "ri", it may give "riddle", "righter" etc.
+plugin for CudaText.
+handles auto-complete command (Ctrl+Space). gives completion listbox with 
+words from current document, which start with the current word (under caret). 
+e.g. if you typed "ri", it may give "riddle", "righter" etc.
 
-plugin has options: 
-- minimal word len (words of smaller len won't show in list)
+plugin has options in the config file, call menu item
+"Options / Settings-pligins / Complete From Text": 
+
 - lexers list (for which to work), specify none-lexer as '-'
+- minimal word length (words of smaller length won't show in list)
 - case-sensitive
 
-to edit options, open plugin's source (by Addon Manager) and options are 
-at the top of __init__.py.
+plugin respects CudaText option "nonword_chars", so for example it can find
+names with $ (if $ is added to "nonword_chars").
 
 
-Author: Alexey (CudaText)
+Author: Alexey Torgashin (CudaText)
 License: MIT
