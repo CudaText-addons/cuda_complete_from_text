@@ -1,4 +1,7 @@
 
+2019.11.17
++ plugin considers CudaText option "nonword_chars"
+
 2017.05.05
 - fix: not worked on words with "_"
 
@@ -9,4 +12,4 @@
 * list prefix chg to "w"
 
 2016.01.02
-init
+initial

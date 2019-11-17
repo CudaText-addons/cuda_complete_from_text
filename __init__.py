@@ -1,15 +1,17 @@
 import re
 from cudatext import *
+import cudax_lib as appx
 
 # '-' here is none-lexer
 option_lexers = '-,ini files,markdown,restructuredtext,properties'
 option_min_len = 3
 option_case_sens = False
-prefix = 'w'
-
+prefix = 'word'
+nonwords = ''
 
 def isword(s):
-    return s.isalnum() or s=='_'
+    return s not in ' \t'+nonwords
+
 
 def is_text_with_begin(s, begin):
     if option_case_sens:
@@ -20,25 +22,31 @@ def is_text_with_begin(s, begin):
 
 def get_words_list():
     text = ed.get_text_all()
-    regex = r'\w{%d,}'%option_min_len
-    l = re.findall(regex, text)
+    pattern = '[ \t\n'+re.escape(nonwords)+']+'
+    l = re.split(pattern, text)
+    l = [s for s in l if len(s)>=option_min_len]
+
     if not l: return
     l = sorted(list(set(l)))
     return l
 
 
 def get_word(x, y):
-    if x==0: return
+    if not 0<=y<ed.get_line_count():
+        return
+    s = ed.get_text_line(y)
+    if not 0<x<=len(s):
+        return
 
     x0 = x
-    while (x0>0) and isword(ed.get_text_substr(x0-1, y, x0, y)):
+    while (x0>0) and isword(s[x0-1]):
         x0-=1
-    text1 = ed.get_text_substr(x0, y, x, y)
+    text1 = s[x0:x]
 
     x0 = x
-    while isword(ed.get_text_substr(x0, y, x0+1, y)):
+    while (x0<len(s)) and isword(s[x0]):
         x0+=1
-    text2 = ed.get_text_substr(x, y, x0, y)
+    text2 = s[x:x0]
 
     return (text1, text2)
 
@@ -54,6 +62,11 @@ class Command:
         if lex=='': lex='-'
         allow = ','+lex.lower()+',' in ','+option_lexers.lower()+','
         if not allow: return
+
+        global nonwords
+        nonwords = appx.get_opt('nonword_chars',
+          '''-+*=/\()[]{}<>"'.,:;~?!@#$%^&|`…''',
+          appx.CONFIG_LEV_ALL)
 
         words = get_words_list()
         word = get_word(x0, y0)
