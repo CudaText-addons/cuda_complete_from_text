@@ -10,10 +10,12 @@ prefix = 'word'
 nonwords = ''
 
 def isword(s):
+
     return s not in ' \t'+nonwords
 
 
 def is_text_with_begin(s, begin):
+
     if option_case_sens:
         return s.startswith(begin)
     else:
@@ -21,6 +23,7 @@ def is_text_with_begin(s, begin):
 
 
 def get_words_list():
+
     text = ed.get_text_all()
     pattern = '[ \t\n'+re.escape(nonwords)+']+'
     l = re.split(pattern, text)
@@ -32,6 +35,7 @@ def get_words_list():
 
 
 def get_word(x, y):
+
     if not 0<=y<ed.get_line_count():
         return
     s = ed.get_text_line(y)
@@ -52,12 +56,15 @@ def get_word(x, y):
 
 
 class Command:
+
     def on_complete(self, ed_self):
+
         carets = ed.get_carets()
         if len(carets)!=1: return
         x0, y0, x1, y1 = carets[0]
+        if y1>=0: return #don't allow selection
 
-        lex = ed.get_prop(PROP_LEXER_CARET, '')
+        lex = ed.get_prop(PROP_LEXER_FILE, '')
         if lex is None: return
         if lex=='': lex='-'
         allow = ','+lex.lower()+',' in ','+option_lexers.lower()+','
@@ -69,8 +76,8 @@ class Command:
           appx.CONFIG_LEV_ALL)
 
         words = get_words_list()
-        word = get_word(x0, y0)
         if not words: return
+        word = get_word(x0, y0)
         if not word: return
         word1, word2 = word
 
