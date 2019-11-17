@@ -8,3 +8,9 @@ homepage=https://github.com/CudaText-addons/cuda_complete_from_text
 [item1]
 section=events
 events=on_complete
+
+[item100]
+section=commands
+caption=Complete From Text\Config
+method=config
+menu=o
