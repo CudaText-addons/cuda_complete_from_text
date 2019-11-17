@@ -1,13 +1,17 @@
+import os
 import re
 from cudatext import *
 import cudax_lib as appx
 
-# '-' here is none-lexer
-option_lexers = '-,ini files,markdown,restructuredtext,properties'
-option_min_len = 3
-option_case_sens = False
+fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'plugins.ini')
+section = 'complete_from_text'
 prefix = 'word'
 nonwords = ''
+
+# '-' here is none-lexer
+option_lexers = ini_read(fn_config, section, 'lexers', '-,ini files,markdown,restructuredtext,properties')
+option_min_len = int(ini_read(fn_config, section, 'min_len', '3'))
+option_case_sens = ini_read(fn_config, section, 'case_sens', '1')=='1'
 
 def isword(s):
 
@@ -91,3 +95,11 @@ class Command:
 
         ed.complete('\n'.join(words), len(word1), len(word2))
         return True
+
+
+    def config(self):
+        
+        ini_write(fn_config, section, 'lexers', option_lexers)
+        ini_write(fn_config, section, 'min_len', str(option_min_len))
+        ini_write(fn_config, section, 'case_sens', '1' if option_case_sens else '0')
+        file_open(fn_config)

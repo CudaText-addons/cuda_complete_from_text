@@ -1,6 +1,7 @@
 
 2019.11.17
 + plugin considers CudaText option "nonword_chars"
++ added config and menu item in "Options / Settings-plugins"
 
 2017.05.05
 - fix: not worked on words with "_"
