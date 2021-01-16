@@ -17,6 +17,7 @@ option_case_sens = str_to_bool(ini_read(fn_config, section, 'case_sens', '1'))
 option_no_cmt = str_to_bool(ini_read(fn_config, section, 'no_comments', '1'))
 option_no_str = str_to_bool(ini_read(fn_config, section, 'no_strings', '1'))
 option_what_editors = int(ini_read(fn_config, section, 'what_editors', '0'))
+option_max_lines = int(ini_read(fn_config, section, 'max_lines', '10000'))
 
 
 def get_editors(ed, lexer):
@@ -70,6 +71,9 @@ def get_regex(nonwords):
 
 
 def get_words_list(ed, regex):
+
+    if ed.get_line_count() > option_max_lines:
+        return []
 
     if option_no_cmt and option_no_str:
         ops = 'T6'
@@ -163,4 +167,5 @@ class Command:
         ini_write(fn_config, section, 'no_comments', bool_to_str(option_no_cmt))
         ini_write(fn_config, section, 'no_strings', bool_to_str(option_no_str))
         ini_write(fn_config, section, 'what_editors', str(option_what_editors))
+        ini_write(fn_config, section, 'max_lines', str(option_max_lines))
         file_open(fn_config)

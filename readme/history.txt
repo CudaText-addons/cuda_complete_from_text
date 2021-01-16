@@ -1,6 +1,7 @@
 
 2021.01.16
 + add: option "what_editors" to choose documents to read: current document, all opened documents, all opened documents with the same lexer
++ add: option "max_lines"
 + add: options "no_comments", "no_strings" (boolean)
 + add: speedup the word finding by using API EDACTION_FIND_ALL
 
