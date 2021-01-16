@@ -1,6 +1,6 @@
 [info]
 title=Complete From Text
-desc=Handles auto-completion command (Ctrl+Space) and gives list of words from current file, which start from the current word. Active only for some lexers: edit options in plugin code.
+desc=Handles auto-completion command (Ctrl+Space) and gives list of words from the current document (or all documents, by option), starting from the currently typed word.
 type=cudatext-plugin
 subdir=cuda_complete_from_text
 homepage=https://github.com/CudaText-addons/cuda_complete_from_text
