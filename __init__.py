@@ -16,6 +16,7 @@ option_min_len = int(ini_read(fn_config, section, 'min_len', '3'))
 option_case_sens = str_to_bool(ini_read(fn_config, section, 'case_sens', '1'))
 option_no_cmt = str_to_bool(ini_read(fn_config, section, 'no_comments', '1'))
 option_no_str = str_to_bool(ini_read(fn_config, section, 'no_strings', '1'))
+option_what_editors = int(ini_read(fn_config, section, 'what_editors', '0'))
 
 def isword(s):
 
@@ -77,21 +78,24 @@ class Command:
 
     def on_complete(self, ed_self):
 
-        carets = ed.get_carets()
+        carets = ed_self.get_carets()
         if len(carets)!=1: return
         x0, y0, x1, y1 = carets[0]
         if y1>=0: return #don't allow selection
 
-        lex = ed.get_prop(PROP_LEXER_FILE, '')
+        lex = ed_self.get_prop(PROP_LEXER_FILE, '')
         if lex is None: return
         if lex=='': lex='-'
         allow = ','+lex.lower()+',' in ','+option_lexers.lower()+','
         if not allow: return
 
         global nonwords
-        nonwords = appx.get_opt('nonword_chars',
-          '''-+*=/\()[]{}<>"'.,:;~?!@#$%^&|`…''',
-          appx.CONFIG_LEV_ALL)
+        nonwords = appx.get_opt(
+            'nonword_chars',
+            '''-+*=/\()[]{}<>"'.,:;~?!@#$%^&|`…''',
+            appx.CONFIG_LEV_ALL,
+            ed_self,
+            lex)
 
         words = get_words_list(ed_self)
         if not words: return
@@ -107,7 +111,7 @@ class Command:
         #print('word:', word)
         #print('list:', words)
 
-        ed.complete('\n'.join(words), len(word1), len(word2))
+        ed_self.complete('\n'.join(words), len(word1), len(word2))
         return True
 
 
