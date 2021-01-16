@@ -2,6 +2,7 @@
 2021.01.16
 + add: speedup the word finding by using new API EDACTION_FIND_ALL
 + add: options "no_comments", "no_strings" (boolean)
++ add: option "what_editors" which allows to take words from all documents with the same lexer
 
 2019.11.17
 + add: plugin considers CudaText option "nonword_chars"

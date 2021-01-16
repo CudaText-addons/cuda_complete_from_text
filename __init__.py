@@ -18,6 +18,27 @@ option_no_cmt = str_to_bool(ini_read(fn_config, section, 'no_comments', '1'))
 option_no_str = str_to_bool(ini_read(fn_config, section, 'no_strings', '1'))
 option_what_editors = int(ini_read(fn_config, section, 'what_editors', '0'))
 
+
+def get_editors(ed, lexer):
+
+    if option_what_editors==0:
+        return [ed]
+    elif option_what_editors==1:
+        return [Editor(h) for h in ed_handles()]
+    elif option_what_editors==2:
+        res = []
+        for h in ed_handles():
+            e = Editor(h)
+            if e.get_prop(PROP_LEXER_FILE)==lexer:
+                res += [e]
+        return res
+
+
+def is_lexer_allowed(lex):
+
+    return ','+(lex or '-').lower()+',' in ','+option_lexers.lower()+','
+
+
 def isword(s):
 
     return s not in ' \t'+nonwords
@@ -42,14 +63,13 @@ def get_words_list(ed):
     else:
         ops = ''
 
-    res = ed.action(EDACTION_FIND_ALL, 
+    res = ed.action(EDACTION_FIND_ALL,
         r'\b[a-z_]\w{' + str(option_min_len-1) + r',}\b',
         'r' + ops
         ) or []
-    
-    l = [ed.get_text_substr(*r) for r in res]
 
-    l = sorted(list(set(l)))
+    l = [ed.get_text_substr(*r) for r in res]
+    l = list(set(l))
     return l
 
 
@@ -85,9 +105,7 @@ class Command:
 
         lex = ed_self.get_prop(PROP_LEXER_FILE, '')
         if lex is None: return
-        if lex=='': lex='-'
-        allow = ','+lex.lower()+',' in ','+option_lexers.lower()+','
-        if not allow: return
+        if not is_lexer_allowed(lex): return
 
         global nonwords
         nonwords = appx.get_opt(
@@ -97,8 +115,13 @@ class Command:
             ed_self,
             lex)
 
-        words = get_words_list(ed_self)
+        words = []
+        for e in get_editors(ed_self, lex):
+            words += get_words_list(e)
         if not words: return
+        words.sort()
+        #print('words', words)
+
         word = get_word(x0, y0)
         if not word: return
         word1, word2 = word
@@ -116,10 +139,11 @@ class Command:
 
 
     def config(self):
-        
+
         ini_write(fn_config, section, 'lexers', option_lexers)
         ini_write(fn_config, section, 'min_len', str(option_min_len))
         ini_write(fn_config, section, 'case_sens', bool_to_str(option_case_sens))
         ini_write(fn_config, section, 'no_comments', bool_to_str(option_no_cmt))
         ini_write(fn_config, section, 'no_strings', bool_to_str(option_no_str))
+        ini_write(fn_config, section, 'what_editors', str(option_what_editors))
         file_open(fn_config)
