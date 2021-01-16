@@ -136,7 +136,7 @@ class Command:
         for e in get_editors(ed_self, lex):
             words += get_words_list(e, regex)
         if not words: return
-        words.sort()
+        words = sorted(list(set(words)))
         #print('words', words)
 
         word = get_word(x0, y0)
