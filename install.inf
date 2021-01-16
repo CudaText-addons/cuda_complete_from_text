@@ -4,6 +4,7 @@ desc=Handles auto-completion command (Ctrl+Space) and gives list of words from c
 type=cudatext-plugin
 subdir=cuda_complete_from_text
 homepage=https://github.com/CudaText-addons/cuda_complete_from_text
+api=1.0.318
 
 [item1]
 section=events

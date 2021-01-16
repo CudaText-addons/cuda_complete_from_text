@@ -1,16 +1,19 @@
 
+2021.01.16
++ add: speedup the word finding by using new API EDACTION_FIND_ALL
++ add: options "no_comments", "no_strings" (boolean)
+
 2019.11.17
-+ plugin considers CudaText option "nonword_chars"
-+ added config and menu item in "Options / Settings-plugins"
++ add: plugin considers CudaText option "nonword_chars"
++ add: added config and menu item in "Options / Settings-plugins"
 
 2017.05.05
 - fix: not worked on words with "_"
 
 2017.03.15
-+ lexer-list option is lower-case
-+ lexer-list, added "ini files,properties"
-+ skip word which is under caret (caret in middle or end)
-* list prefix chg to "w"
++ add: lexer-list option is lower-case
++ add: lexer-list, added "ini files,properties"
++ add: skip word which is under caret (caret in middle or end)
 
 2016.01.02
 initial

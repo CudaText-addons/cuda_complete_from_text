@@ -1,17 +1,21 @@
 import os
-import re
 from cudatext import *
 import cudax_lib as appx
 
 fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'plugins.ini')
 section = 'complete_from_text'
-prefix = 'word'
+prefix = 'text'
 nonwords = ''
+
+def bool_to_str(v): return '1' if v else '0'
+def str_to_bool(s): return s=='1'
 
 # '-' here is none-lexer
 option_lexers = ini_read(fn_config, section, 'lexers', '-,ini files,markdown,restructuredtext,properties')
 option_min_len = int(ini_read(fn_config, section, 'min_len', '3'))
-option_case_sens = ini_read(fn_config, section, 'case_sens', '1')=='1'
+option_case_sens = str_to_bool(ini_read(fn_config, section, 'case_sens', '1'))
+option_no_cmt = str_to_bool(ini_read(fn_config, section, 'no_comments', '1'))
+option_no_str = str_to_bool(ini_read(fn_config, section, 'no_strings', '1'))
 
 def isword(s):
 
@@ -26,14 +30,24 @@ def is_text_with_begin(s, begin):
         return s.upper().startswith(begin.upper())
 
 
-def get_words_list():
+def get_words_list(ed):
 
-    text = ed.get_text_all()
-    pattern = '[ \t\n'+re.escape(nonwords)+']+'
-    l = re.split(pattern, text)
-    l = [s for s in l if len(s)>=option_min_len]
+    if option_no_cmt and option_no_str:
+        ops = 'T6'
+    elif option_no_cmt:
+        ops = 'T4'
+    elif option_no_str:
+        ops = 'T5'
+    else:
+        ops = ''
 
-    if not l: return
+    res = ed.action(EDACTION_FIND_ALL, 
+        r'\b[a-z_]\w{' + str(option_min_len-1) + r',}\b',
+        'r' + ops
+        ) or []
+    
+    l = [ed.get_text_substr(*r) for r in res]
+
     l = sorted(list(set(l)))
     return l
 
@@ -79,7 +93,7 @@ class Command:
           '''-+*=/\()[]{}<>"'.,:;~?!@#$%^&|`…''',
           appx.CONFIG_LEV_ALL)
 
-        words = get_words_list()
+        words = get_words_list(ed_self)
         if not words: return
         word = get_word(x0, y0)
         if not word: return
@@ -101,5 +115,7 @@ class Command:
         
         ini_write(fn_config, section, 'lexers', option_lexers)
         ini_write(fn_config, section, 'min_len', str(option_min_len))
-        ini_write(fn_config, section, 'case_sens', '1' if option_case_sens else '0')
+        ini_write(fn_config, section, 'case_sens', bool_to_str(option_case_sens))
+        ini_write(fn_config, section, 'no_comments', bool_to_str(option_no_cmt))
+        ini_write(fn_config, section, 'no_strings', bool_to_str(option_no_str))
         file_open(fn_config)
