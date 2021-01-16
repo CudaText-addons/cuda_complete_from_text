@@ -52,7 +52,24 @@ def is_text_with_begin(s, begin):
         return s.upper().startswith(begin.upper())
 
 
-def get_words_list(ed):
+def get_regex(nonwords):
+
+    specials = '$%#-'
+
+    cls_1st = 'a-z_'
+    for ch in specials:
+        if ch not in nonwords:
+            cls_1st += '\\'+ch
+
+    cls_next = r'\w'
+    for ch in specials:
+        if ch not in nonwords:
+            cls_next += '\\'+ch
+
+    return r'[%s][%s]{%d,}' % (cls_1st, cls_next, option_min_len-1)
+
+
+def get_words_list(ed, regex):
 
     if option_no_cmt and option_no_str:
         ops = 'T6'
@@ -63,10 +80,7 @@ def get_words_list(ed):
     else:
         ops = ''
 
-    res = ed.action(EDACTION_FIND_ALL,
-        r'\b[a-z_]\w{' + str(option_min_len-1) + r',}\b',
-        'r' + ops
-        ) or []
+    res = ed.action(EDACTION_FIND_ALL, regex, 'r'+ops) or []
 
     l = [ed.get_text_substr(*r) for r in res]
     l = list(set(l))
@@ -116,8 +130,11 @@ class Command:
             lex)
 
         words = []
+        regex = get_regex(nonwords)
+        #print('regex', regex)
+
         for e in get_editors(ed_self, lex):
-            words += get_words_list(e)
+            words += get_words_list(e, regex)
         if not words: return
         words.sort()
         #print('words', words)
