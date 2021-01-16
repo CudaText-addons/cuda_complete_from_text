@@ -17,6 +17,9 @@ Options are:
     '1': all opened documents.
     '2': all opened documents with the same lexer.
 
+Plugin supports CudaText option "nonword_chars", so for example char '$' can be founds in words too,
+if option is configured so.
+
 
 Author: Alexey Torgashin (CudaText)
 License: MIT
