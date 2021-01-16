@@ -13,9 +13,6 @@ Options are:
 - 'no_comments': ignore words inside "syntax comments" (lexer specific).
 - 'no_strings': ignore words inside "syntax strings" (lexer specific).
 
-Plugin respects CudaText option "nonword_chars", so for example it can find
-names with '$' (if '$' is added to "nonword_chars").
-
 
 Author: Alexey Torgashin (CudaText)
 License: MIT
