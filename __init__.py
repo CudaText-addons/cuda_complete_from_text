@@ -54,6 +54,7 @@ def is_text_with_begin(s, begin):
 
 
 def get_regex(nonwords):
+    '''main regex to find words, considering Cud option nonword_chars'''
 
     specials = '$%#-'
 
@@ -67,8 +68,11 @@ def get_regex(nonwords):
         if ch not in nonwords:
             cls_next += '\\'+ch
 
-    return r'[%s][%s]{%d,}' % (cls_1st, cls_next, option_min_len-1)
+    return r'\b[%s][%s]{%d,}' % (cls_1st, cls_next, option_min_len-1)
 
+def get_regex2():
+    '''second regex to find eg '20min' '''
+    return r'\b\d\w*[a-z]\w*\b'
 
 def get_words_list(ed, regex):
 
@@ -135,10 +139,12 @@ class Command:
 
         words = []
         regex = get_regex(nonwords)
+        regex2 = get_regex2()
         #print('regex', regex)
 
         for e in get_editors(ed_self, lex):
             words += get_words_list(e, regex)
+            words += get_words_list(e, regex2)
         if not words: return
         words = sorted(list(set(words)))
         #print('words', words)

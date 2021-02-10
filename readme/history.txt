@@ -1,4 +1,7 @@
 
+2021.02.10
++ add: find also words with leading digits, eg '20min'
+
 2021.01.16
 + add: option "what_editors" to choose documents to read: current document, all opened documents, all opened documents with the same lexer
 + add: option "max_lines"
