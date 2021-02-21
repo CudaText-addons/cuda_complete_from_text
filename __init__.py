@@ -152,6 +152,7 @@ class Command:
         word = get_word(x0, y0)
         if not word: return
         word1, word2 = word
+        if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
 
         words = [prefix+'|'+w for w in words
                  if is_text_with_begin(w, word1)
