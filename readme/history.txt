@@ -1,4 +1,7 @@
 
+2021.02.21
+- fix: fix from https://github.com/Alexey-T/CudaText/issues/3175
+
 2021.02.10
 + add: find also words with leading digits, eg '20min'
 
