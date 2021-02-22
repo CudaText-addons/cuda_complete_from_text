@@ -58,21 +58,12 @@ def get_regex(nonwords):
 
     specials = '$%#-'
 
-    cls_1st = 'a-z_'
+    cls = r'\w'
     for ch in specials:
         if ch not in nonwords:
-            cls_1st += '\\'+ch
+            cls += '\\'+ch
 
-    cls_next = r'\w'
-    for ch in specials:
-        if ch not in nonwords:
-            cls_next += '\\'+ch
-
-    return r'\b[%s][%s]{%d,}' % (cls_1st, cls_next, option_min_len-1)
-
-def get_regex2():
-    '''second regex to find eg '20min' '''
-    return r'\b\d\w*[a-z]\w*\b'
+    return r'\b[%s]{%d,}' % (cls, option_min_len)
 
 def get_words_list(ed, regex):
 
@@ -139,13 +130,15 @@ class Command:
 
         words = []
         regex = get_regex(nonwords)
-        regex2 = get_regex2()
-        #print('regex', regex)
 
+        #find word list from needed editors
         for e in get_editors(ed_self, lex):
             words += get_words_list(e, regex)
-            words += get_words_list(e, regex2)
+        
+        #exclude numbers
+        words = [w for w in words if not w.isdigit()]
         if not words: return
+        
         words = sorted(list(set(words)))
         #print('words', words)
 

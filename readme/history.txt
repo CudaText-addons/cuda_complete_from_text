@@ -1,4 +1,7 @@
 
+2021.02.22
+- fix: https://github.com/Alexey-T/CudaText/issues/3188 (thanks @tmsg-gh)
+
 2021.02.21
 - fix: fix from https://github.com/Alexey-T/CudaText/issues/3175
 
