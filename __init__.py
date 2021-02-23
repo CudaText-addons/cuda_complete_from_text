@@ -1,4 +1,5 @@
 import os
+import re
 from cudatext import *
 import cudax_lib as appx
 
@@ -18,6 +19,7 @@ option_no_cmt = str_to_bool(ini_read(fn_config, section, 'no_comments', '1'))
 option_no_str = str_to_bool(ini_read(fn_config, section, 'no_strings', '1'))
 option_what_editors = int(ini_read(fn_config, section, 'what_editors', '0'))
 option_max_lines = int(ini_read(fn_config, section, 'max_lines', '10000'))
+option_use_acp = str_to_bool(ini_read(fn_config, section, 'use_acp', '1'))
 
 
 def get_editors(ed, lexer):
@@ -106,6 +108,37 @@ def get_word(x, y):
 
     return (text1, text2)
 
+def get_acp_words(word1, word2):
+    sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '.acp')
+    if os.path.isfile(sfile):
+        with open(sfile, 'r') as f:
+            acp_lines = f.readlines()
+    else:
+        return [],set()
+    
+    target_word = word1+word2
+    
+    acp_words = []
+    words = set()
+    for line in acp_lines:
+        line = line.rstrip()
+        if not line:
+            continue
+        
+        m = re.match('^([^\s]+)\s([^|]+)(\|.*)?$', line)
+        if not m:
+            continue
+            
+        pre,word,descr = m[1],m[2].rstrip(),m[3] or ''
+        
+        if len(word) < option_min_len:
+            continue
+        
+        if is_text_with_begin(word, word1)  and  word != word1  and  word != target_word:
+            acp_words.append('{}|{}{}'.format(pre,word,descr)) # descr has a |
+            words.add(word)
+                 
+    return acp_words,words
 
 class Command:
 
@@ -147,15 +180,18 @@ class Command:
         word1, word2 = word
         if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
 
+        acp_words,acp_set = get_acp_words(word1, word2)  if option_use_acp else  ([],set())
+
         words = [prefix+'|'+w for w in words
                  if is_text_with_begin(w, word1)
+                 and w not in acp_set # do not repeat words from acp
                  and w!=word1
                  and w!=(word1+word2)
                  ]
         #print('word:', word)
         #print('list:', words)
 
-        ed_self.complete('\n'.join(words), len(word1), len(word2))
+        ed_self.complete('\n'.join(acp_words+words), len(word1), len(word2))
         return True
 
 
@@ -168,4 +204,5 @@ class Command:
         ini_write(fn_config, section, 'no_strings', bool_to_str(option_no_str))
         ini_write(fn_config, section, 'what_editors', str(option_what_editors))
         ini_write(fn_config, section, 'max_lines', str(option_max_lines))
+        ini_write(fn_config, section, 'use_acp', bool_to_str(option_use_acp))
         file_open(fn_config)

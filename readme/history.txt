@@ -1,3 +1,5 @@
+2021.02.23
++ add: .acp autocomplete files support
 
 2021.02.22
 - fix: https://github.com/Alexey-T/CudaText/issues/3188 (thanks @tmsg-gh)

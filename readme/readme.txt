@@ -17,6 +17,7 @@ Options are:
     0: only current document.
     1: all opened documents.
     2: all opened documents with the same lexer.
+- 'use_acp': add suggestions from autocomplete files in 'data/autocomplete'
 
 Plugin supports CudaText option "nonword_chars", so for example words with '$' can be added,
 if option is configured so.
