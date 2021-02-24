@@ -1,4 +1,5 @@
 import os
+import re
 from cudatext import *
 import cudax_lib as appx
 
@@ -18,6 +19,9 @@ option_no_cmt = str_to_bool(ini_read(fn_config, section, 'no_comments', '1'))
 option_no_str = str_to_bool(ini_read(fn_config, section, 'no_strings', '1'))
 option_what_editors = int(ini_read(fn_config, section, 'what_editors', '0'))
 option_max_lines = int(ini_read(fn_config, section, 'max_lines', '10000'))
+option_use_acp = str_to_bool(ini_read(fn_config, section, 'use_acp', '1'))
+option_case_split = str_to_bool(ini_read(fn_config, section, 'case_split', '0'))
+option_underscore_split = str_to_bool(ini_read(fn_config, section, 'underscore_split', '0'))
 
 
 def get_editors(ed, lexer):
@@ -47,10 +51,72 @@ def isword(s):
 
 def is_text_with_begin(s, begin):
 
+    if option_case_split or option_underscore_split:
+        if option_case_split  and  s[0] == begin[0]:
+            searchwords = re.findall('.[^A-Z]*', begin)
+            wordwords = re.findall('.[^A-Z]*', s)
+            
+            swl = len(searchwords)
+            wwl = len(wordwords)
+            if swl <= wwl:
+                for i in range(swl):
+                    if not wordwords[i].startswith(searchwords[i]):
+                        break
+                else:
+                    return True
+            
+        if option_underscore_split:
+            ss = s.strip('_') # ignore starting,ending underscores
+            if '_' in ss:
+                
+                if not option_case_sens:
+                    begin = begin.lower()
+                    ss = ss.lower()
+
+                wordwords = re.findall('[^_]+', ss) # PROP_LEX => [PROP, LEX]
+                wwl = len(wordwords)
+                bl = len(begin)
+                    
+                if bl <= wwl: # most common case, first chars of each word: PLF|PL|P => PROP_LEXER_FILE
+                    for i in range(bl):
+                        if begin[i] != wordwords[i][0]:
+                            break
+                    else:
+                        return True
+                            
+                if spl_match(begin, wordwords):
+                    return True
+        
     if option_case_sens:
         return s.startswith(begin)
     else:
         return s.upper().startswith(begin.upper())
+
+
+def spl_match(begin, words):
+    '''returns True if 'begin' fits consecutively into 'words' (prefixes of 'words')'''
+    
+    word = words[0]
+    common_len = 0
+    for i in range(min(len(begin), len(word))):
+        if begin[i] == word[i]:
+            common_len = i+1
+        else:
+            break
+    
+    if common_len > 0:
+        if len(begin) == common_len: # last match success
+            return True
+        elif len(words) == 1: # last word - should be full prefix
+            return False
+            
+        for i in range(common_len): # i: 0 and 1 for common_len=2 ->
+            # ... on calling spl_match() 'begin' will always be non-empty - less than full match
+            res = spl_match(begin[common_len-i:], words[1:])
+            if res:
+                return True
+        
+    return False
 
 
 def get_regex(nonwords):
@@ -106,6 +172,41 @@ def get_word(x, y):
 
     return (text1, text2)
 
+def get_acp_words(word1, word2):
+    
+    sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '.acp')
+    if os.path.isfile(sfile):
+        with open(sfile, 'r') as f:
+            acp_lines = f.readlines()
+    else:
+        return [],set()
+    
+    target_word = word1+word2
+    
+    if len(acp_lines) > 0  and  acp_lines[0].startswith('#chars'):
+        del acp_lines[0]
+    
+    acp_words = []
+    words = set()
+    for line in acp_lines:
+        line = line.rstrip()
+        if not line:
+            continue
+        
+        m = re.match('^([^\s]+)\s([^|]+)(\|.*)?$', line) # ^Prefix Word |Descr?
+        if not m:
+            continue
+            
+        pre,word,descr = m[1],m[2].rstrip(),m[3] or ''
+        
+        if len(word) < option_min_len:
+            continue
+        
+        if is_text_with_begin(word, word1)  and  word != word1  and  word != target_word:
+            acp_words.append('{}|{}{}'.format(pre,word,descr)) # descr has a |
+            words.add(word)
+                 
+    return acp_words,words
 
 class Command:
 
@@ -147,15 +248,18 @@ class Command:
         word1, word2 = word
         if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
 
+        acp_words,acp_set = get_acp_words(word1, word2)  if option_use_acp else  ([],set())
+
         words = [prefix+'|'+w for w in words
                  if is_text_with_begin(w, word1)
+                 and w not in acp_set # do not repeat words from acp
                  and w!=word1
                  and w!=(word1+word2)
                  ]
         #print('word:', word)
         #print('list:', words)
 
-        ed_self.complete('\n'.join(words), len(word1), len(word2))
+        ed_self.complete('\n'.join(acp_words+words), len(word1), len(word2))
         return True
 
 
@@ -168,4 +272,7 @@ class Command:
         ini_write(fn_config, section, 'no_strings', bool_to_str(option_no_str))
         ini_write(fn_config, section, 'what_editors', str(option_what_editors))
         ini_write(fn_config, section, 'max_lines', str(option_max_lines))
+        ini_write(fn_config, section, 'use_acp', bool_to_str(option_use_acp))
+        ini_write(fn_config, section, 'case_split', bool_to_str(option_case_split))
+        ini_write(fn_config, section, 'underscore_split', bool_to_str(option_underscore_split))
         file_open(fn_config)
