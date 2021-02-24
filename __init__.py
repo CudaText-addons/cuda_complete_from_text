@@ -101,6 +101,8 @@ def spl_match(begin, words):
     for i in range(min(len(begin), len(word))):
         if begin[i] == word[i]:
             common_len = i+1
+        else:
+            break
     
     if common_len > 0:
         if len(begin) == common_len: # last match success
