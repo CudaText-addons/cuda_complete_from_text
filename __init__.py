@@ -66,14 +66,14 @@ def is_text_with_begin(s, begin):
                     return True
             
         if option_underscore_split:
-            s = s.strip('_') # ignore starting,ending underscores
-            if '_' in s:
+            ss = s.strip('_') # ignore starting,ending underscores
+            if '_' in ss:
                 
                 if not option_case_sens:
                     begin = begin.lower()
-                    s = s.lower()
+                    ss = ss.lower()
 
-                wordwords = re.findall('[^_]+', s) # PROP_LEX => [PROP, LEX]
+                wordwords = re.findall('[^_]+', ss) # PROP_LEX => [PROP, LEX]
                 wwl = len(wordwords)
                 bl = len(begin)
                     
