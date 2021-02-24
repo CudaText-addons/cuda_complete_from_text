@@ -1,3 +1,6 @@
+2021.02.24
++ add: options "case_split", "underscore_split" (boolean)
+
 2021.02.23
 + add: .acp autocomplete files support
 

@@ -20,6 +20,8 @@ option_no_str = str_to_bool(ini_read(fn_config, section, 'no_strings', '1'))
 option_what_editors = int(ini_read(fn_config, section, 'what_editors', '0'))
 option_max_lines = int(ini_read(fn_config, section, 'max_lines', '10000'))
 option_use_acp = str_to_bool(ini_read(fn_config, section, 'use_acp', '1'))
+option_case_split = str_to_bool(ini_read(fn_config, section, 'case_split', '0'))
+option_underscore_split = str_to_bool(ini_read(fn_config, section, 'underscore_split', '0'))
 
 
 def get_editors(ed, lexer):
@@ -49,10 +51,70 @@ def isword(s):
 
 def is_text_with_begin(s, begin):
 
+    if option_case_split or option_underscore_split:
+        if option_case_split  and  s[0] == begin[0]:
+            searchwords = re.findall('.[^A-Z]*', begin)
+            wordwords = re.findall('.[^A-Z]*', s)
+            
+            swl = len(searchwords)
+            wwl = len(wordwords)
+            if swl <= wwl:
+                for i in range(swl):
+                    if not wordwords[i].startswith(searchwords[i]):
+                        break
+                else:
+                    return True
+            
+        if option_underscore_split:
+            s = s.strip('_') # ignore starting,ending underscores
+            if '_' in s:
+                
+                if not option_case_sens:
+                    begin = begin.lower()
+                    s = s.lower()
+
+                wordwords = re.findall('[^_]+', s) # PROP_LEX => [PROP, LEX]
+                wwl = len(wordwords)
+                bl = len(begin)
+                    
+                if bl <= wwl: # most common case, first chars of each word: PLF|PL|P => PROP_LEXER_FILE
+                    for i in range(bl):
+                        if begin[i] != wordwords[i][0]:
+                            break
+                    else:
+                        return True
+                            
+                if spl_match(begin, wordwords):
+                    return True
+        
     if option_case_sens:
         return s.startswith(begin)
     else:
         return s.upper().startswith(begin.upper())
+
+
+def spl_match(begin, words):
+    '''returns True if 'begin' fits consecutively into 'words' (prefixes of 'words')'''
+    
+    word = words[0]
+    common_len = 0
+    for i in range(min(len(begin), len(word))):
+        if begin[i] == word[i]:
+            common_len = i+1
+    
+    if common_len > 0:
+        if len(begin) == common_len: # last match success
+            return True
+        elif len(words) == 1: # last word - should be full prefix
+            return False
+            
+        for i in range(common_len): # i: 0 and 1 for common_len=2 ->
+            # ... on calling spl_match() 'begin' will always be non-empty - less than full match
+            res = spl_match(begin[common_len-i:], words[1:])
+            if res:
+                return True
+        
+    return False
 
 
 def get_regex(nonwords):
@@ -109,6 +171,7 @@ def get_word(x, y):
     return (text1, text2)
 
 def get_acp_words(word1, word2):
+    
     sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '.acp')
     if os.path.isfile(sfile):
         with open(sfile, 'r') as f:
@@ -118,6 +181,9 @@ def get_acp_words(word1, word2):
     
     target_word = word1+word2
     
+    if len(acp_lines) > 0  and  acp_lines[0].startswith('#chars'):
+        del acp_lines[0]
+    
     acp_words = []
     words = set()
     for line in acp_lines:
@@ -125,7 +191,7 @@ def get_acp_words(word1, word2):
         if not line:
             continue
         
-        m = re.match('^([^\s]+)\s([^|]+)(\|.*)?$', line)
+        m = re.match('^([^\s]+)\s([^|]+)(\|.*)?$', line) # ^Prefix Word |Descr?
         if not m:
             continue
             
@@ -205,4 +271,6 @@ class Command:
         ini_write(fn_config, section, 'what_editors', str(option_what_editors))
         ini_write(fn_config, section, 'max_lines', str(option_max_lines))
         ini_write(fn_config, section, 'use_acp', bool_to_str(option_use_acp))
+        ini_write(fn_config, section, 'case_split', bool_to_str(option_case_split))
+        ini_write(fn_config, section, 'underscore_split', bool_to_str(option_underscore_split))
         file_open(fn_config)
