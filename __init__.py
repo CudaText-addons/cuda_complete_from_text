@@ -227,8 +227,7 @@ class Command:
         lex = ed_self.get_prop(PROP_LEXER_FILE, '')
 
         if lex is None: return
-        #if not is_lexer_allowed(lex): return
-        _res = is_lexer_allowed(lex)
+        if not is_lexer_allowed(lex): return
 
         global nonwords
         nonwords = appx.get_opt(
