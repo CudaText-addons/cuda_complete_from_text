@@ -25,5 +25,7 @@ Plugin supports CudaText option "nonword_chars", so for example words with '$' c
 if option is configured so.
 
 
-Author: Alexey Torgashin (CudaText)
+Authors:
+  Alexey Torgashin (CudaText)
+  Shovel (CudaText forum user), https://github.com/halfbrained
 License: MIT
