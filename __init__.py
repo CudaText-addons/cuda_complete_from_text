@@ -176,10 +176,15 @@ def get_acp_words(word1, word2):
     
     sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '.acp')
     if os.path.isfile(sfile):
-        with open(sfile, 'r') as f:
+        with open(sfile, 'r', encoding='cp1252') as f:
             acp_lines = f.readlines()
     else:
-        return [],set()
+        sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '_.acp')
+        if os.path.isfile(sfile):
+            with open(sfile, 'r', encoding='cp1252') as f:
+                acp_lines = f.readlines()
+        else:
+            return [],set()
     
     target_word = word1+word2
     
@@ -188,36 +193,39 @@ def get_acp_words(word1, word2):
     
     acp_words = []
     words = set()
+    fstr = '{}|{}|{}'+chr(9)+'{}'
     for line in acp_lines:
         line = line.rstrip()
         if not line:
             continue
         
-        m = re.match('^([^\s]+)\s([^|]+)(\|.*)?$', line) # ^Prefix Word |Descr?
+        # using '#chars'
+        #m = re.match('^([^\s]+)\s([\w'+ word_chars +']+)([^|]*)\|?(.*)?$', line) # ^Prefix Word Args Descr?
+        m = re.match('^([^\s]+)\s([^(| ]+)([^|]*)\|?(.*)?$', line) # ^Prefix Word Args Descr?
         if not m:
             continue
             
-        pre,word,descr = m[1],m[2].rstrip(),m[3] or ''
+        pre,word,args,descr = m[1],m[2].rstrip(),m[3],m[4] or ''
         
         if len(word) < option_min_len:
             continue
-        
         if is_text_with_begin(word, word1)  and  word != word1  and  word != target_word:
-            acp_words.append('{}|{}{}'.format(pre,word,descr)) # descr has a |
+            word = word.replace('%20', ' ')
+            acp_words.append(fstr.format(pre, word, args, descr))
             words.add(word)
-                 
+             
     return acp_words,words
 
 class Command:
 
     def on_complete(self, ed_self):
-
         carets = ed_self.get_carets()
         if len(carets)!=1: return
         x0, y0, x1, y1 = carets[0]
         if y1>=0: return #don't allow selection
 
         lex = ed_self.get_prop(PROP_LEXER_FILE, '')
+
         if lex is None: return
         if not is_lexer_allowed(lex): return
 
@@ -229,7 +237,14 @@ class Command:
             ed_self,
             lex)
 
+        word = get_word(x0, y0)
+
+        if not word: return
+        word1, word2 = word
+        if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
+
         words = []
+
         regex = get_regex(nonwords)
 
         #find word list from needed editors
@@ -238,17 +253,13 @@ class Command:
         
         #exclude numbers
         words = [w for w in words if not w.isdigit()]
-        if not words: return
+        if words: 
+            words = sorted(list(set(words)))
         
-        words = sorted(list(set(words)))
-        #print('words', words)
-
-        word = get_word(x0, y0)
-        if not word: return
-        word1, word2 = word
-        if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
-
         acp_words,acp_set = get_acp_words(word1, word2)  if option_use_acp else  ([],set())
+        
+        if not words and not acp_words:
+            return
 
         words = [prefix+'|'+w for w in words
                  if is_text_with_begin(w, word1)
