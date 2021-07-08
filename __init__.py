@@ -204,9 +204,9 @@ def get_acp_words(word1, word2):
         m = re.match('^([^\s]+)\s([^(| ]+)([^|]*)\|?(.*)?$', line) # ^Prefix Word Args Descr?
         if not m:
             continue
-            
-        pre,word,args,descr = m[1],m[2].rstrip(),m[3],m[4] or ''
-        
+
+        pre, word, args, descr = m.group(1), m.group(2).rstrip(), m.group(3), m.group(4) or ''
+
         if len(word) < option_min_len:
             continue
         if is_text_with_begin(word, word1)  and  word != word1  and  word != target_word:
