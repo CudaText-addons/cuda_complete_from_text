@@ -205,6 +205,7 @@ def get_acp_words(word1, word2):
         if not m:
             continue
 
+        # avoid 'm[index]' to support old Python 3.4
         pre, word, args, descr = m.group(1), m.group(2).rstrip(), m.group(3), m.group(4) or ''
 
         if len(word) < option_min_len:
