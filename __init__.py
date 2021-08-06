@@ -41,7 +41,7 @@ def get_editors(ed, lexer):
 
 def is_lexer_allowed(lex):
 
-    return ','+(lex or '-').lower()+',' in ','+option_lexers.lower()+','
+    return (',*,' in ','+option_lexers+',') or (','+(lex or '-').lower()+',' in ','+option_lexers.lower()+',')
 
 
 def isword(s):
