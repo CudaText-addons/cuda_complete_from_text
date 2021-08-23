@@ -271,7 +271,7 @@ class Command:
         #print('word:', word)
         #print('list:', words)
 
-        ed_self.complete('\n'.join(acp_words+words), len(word1), len(word2))
+        ed_self.complete('\n'.join(words+acp_words), len(word1), len(word2))
         return True
 
 
