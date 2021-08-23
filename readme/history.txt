@@ -1,4 +1,7 @@
 
+2021.08.06
++ add: can specify 'lexers=*'' to enable work in all lexers (from @xbarbie)
+
 2021.07.08
 - fix: minor fix to support Python 3.4 (thanks @de77)
 
