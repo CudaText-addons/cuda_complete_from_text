@@ -55,7 +55,7 @@ def is_text_with_begin(s, begin):
         if option_case_split  and  s[0] == begin[0]:
             searchwords = re.findall('.[^A-Z]*', begin)
             wordwords = re.findall('.[^A-Z]*', s)
-            
+
             swl = len(searchwords)
             wwl = len(wordwords)
             if swl <= wwl:
@@ -64,11 +64,11 @@ def is_text_with_begin(s, begin):
                         break
                 else:
                     return True
-            
+
         if option_underscore_split:
             ss = s.strip('_') # ignore starting,ending underscores
             if '_' in ss:
-                
+
                 if not option_case_sens:
                     begin = begin.lower()
                     ss = ss.lower()
@@ -76,17 +76,17 @@ def is_text_with_begin(s, begin):
                 wordwords = re.findall('[^_]+', ss) # PROP_LEX => [PROP, LEX]
                 wwl = len(wordwords)
                 bl = len(begin)
-                    
+
                 if bl <= wwl: # most common case, first chars of each word: PLF|PL|P => PROP_LEXER_FILE
                     for i in range(bl):
                         if begin[i] != wordwords[i][0]:
                             break
                     else:
                         return True
-                            
+
                 if spl_match(begin, wordwords):
                     return True
-        
+
     if option_case_sens:
         return s.startswith(begin)
     else:
@@ -95,7 +95,7 @@ def is_text_with_begin(s, begin):
 
 def spl_match(begin, words):
     '''returns True if 'begin' fits consecutively into 'words' (prefixes of 'words')'''
-    
+
     word = words[0]
     common_len = 0
     for i in range(min(len(begin), len(word))):
@@ -103,19 +103,19 @@ def spl_match(begin, words):
             common_len = i+1
         else:
             break
-    
+
     if common_len > 0:
         if len(begin) == common_len: # last match success
             return True
         elif len(words) == 1: # last word - should be full prefix
             return False
-            
+
         for i in range(common_len): # i: 0 and 1 for common_len=2 ->
             # ... on calling spl_match() 'begin' will always be non-empty - less than full match
             res = spl_match(begin[common_len-i:], words[1:])
             if res:
                 return True
-        
+
     return False
 
 
@@ -173,7 +173,7 @@ def get_word(x, y):
     return (text1, text2)
 
 def get_acp_words(word1, word2):
-    
+
     sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '.acp')
     if os.path.isfile(sfile):
         with open(sfile, 'r', encoding='cp1252') as f:
@@ -185,12 +185,12 @@ def get_acp_words(word1, word2):
                 acp_lines = f.readlines()
         else:
             return [],set()
-    
+
     target_word = word1+word2
-    
+
     if len(acp_lines) > 0  and  acp_lines[0].startswith('#chars'):
         del acp_lines[0]
-    
+
     acp_words = []
     words = set()
     fstr = '{}|{}|{}'+chr(9)+'{}'
@@ -198,7 +198,7 @@ def get_acp_words(word1, word2):
         line = line.rstrip()
         if not line:
             continue
-        
+
         # using '#chars'
         #m = re.match('^([^\s]+)\s([\w'+ word_chars +']+)([^|]*)\|?(.*)?$', line) # ^Prefix Word Args Descr?
         m = re.match('^([^\s]+)\s([^(| ]+)([^|]*)\|?(.*)?$', line) # ^Prefix Word Args Descr?
@@ -214,7 +214,7 @@ def get_acp_words(word1, word2):
             word = word.replace('%20', ' ')
             acp_words.append(fstr.format(pre, word, args, descr))
             words.add(word)
-             
+
     return acp_words,words
 
 class Command:
@@ -251,14 +251,14 @@ class Command:
         #find word list from needed editors
         for e in get_editors(ed_self, lex):
             words += get_words_list(e, regex)
-        
+
         #exclude numbers
         words = [w for w in words if not w.isdigit()]
-        if words: 
+        if words:
             words = sorted(list(set(words)))
-        
+
         acp_words,acp_set = get_acp_words(word1, word2)  if option_use_acp else  ([],set())
-        
+
         if not words and not acp_words:
             return
 
@@ -271,7 +271,7 @@ class Command:
         #print('word:', word)
         #print('list:', words)
 
-        ed_self.complete('\n'.join(acp_words+words), len(word1), len(word2))
+        ed_self.complete('\n'.join(words+acp_words), len(word1), len(word2))
         return True
 
 
