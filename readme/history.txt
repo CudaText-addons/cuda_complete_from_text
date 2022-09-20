@@ -1,4 +1,7 @@
 
+2022.09.20
+* change: .acp files are now must be in UTF-8
+
 2021.08.06
 + add: can specify 'lexers=*'' to enable work in all lexers (from @xbarbie)
 

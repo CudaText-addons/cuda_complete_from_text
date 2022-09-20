@@ -172,19 +172,24 @@ def get_word(x, y):
 
     return (text1, text2)
 
+
+def _read_acp_file(sfile):
+
+    with open(sfile, 'r', encoding='utf-8', errors='ignore') as f:
+        lines = f.readlines()
+    return lines
+    
 def get_acp_words(word1, word2):
 
     sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '.acp')
     if os.path.isfile(sfile):
-        with open(sfile, 'r', encoding='cp1252') as f:
-            acp_lines = f.readlines()
+        acp_lines = _read_acp_file(sfile)
     else:
         sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '_.acp')
         if os.path.isfile(sfile):
-            with open(sfile, 'r', encoding='cp1252') as f:
-                acp_lines = f.readlines()
+            acp_lines = _read_acp_file(sfile)
         else:
-            return [],set()
+            return [], set()
 
     target_word = word1+word2
 
