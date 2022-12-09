@@ -1,3 +1,5 @@
+2022.12.09
+- fix: plugin cannot suggest words for $<caret> in PHP
 
 2022.09.20
 * change: .acp files are now must be in UTF-8
