@@ -129,7 +129,9 @@ def get_regex(nonwords):
         if ch not in nonwords:
             cls += '\\'+ch
 
-    return r'\b[%s]{%d,}' % (cls, option_min_len)
+    regex = r'[%s]{%d,}' % (cls, option_min_len)
+    #print('regex:', repr(regex))
+    return regex
 
 def get_words_list(ed, regex):
 
