@@ -5,7 +5,8 @@ import cudax_lib as appx
 
 fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'plugins.ini')
 section = 'complete_from_text'
-prefix = 'text'
+PREFIX_TEXT = 'text'
+PREFIX_VAR = 'var'
 nonwords = ''
 
 def bool_to_str(v): return '1' if v else '0'
@@ -269,7 +270,13 @@ class Command:
         if not words and not acp_words:
             return
 
-        words = [prefix+'|'+w for w in words
+        def get_prefix(w):
+            if w.startswith('$'):
+                return PREFIX_VAR
+            else:
+                return PREFIX_TEXT
+
+        words = [get_prefix(w)+'|'+w for w in words
                  if is_text_with_begin(w, word1)
                  and w not in acp_set # do not repeat words from acp
                  and w!=word1
