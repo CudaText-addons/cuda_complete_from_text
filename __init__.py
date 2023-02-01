@@ -257,12 +257,8 @@ class Command:
         regex = get_regex(nonwords)
 
         #find word list from needed editors
-        words_by_tabs = []
-        tab_titles = []
         for e in get_editors(ed_self, lex):
             words += get_words_list(e, regex)
-            words_by_tabs.append(get_words_list(e, regex))
-            tab_titles.append(Editor.get_prop(e, PROP_TAB_TITLE))
 
         if option_what_editors==1 or option_what_editors==2:
             words_by_tabs = []
