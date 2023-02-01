@@ -257,8 +257,35 @@ class Command:
         regex = get_regex(nonwords)
 
         #find word list from needed editors
+        words_by_tabs = []
+        tab_titles = []
         for e in get_editors(ed_self, lex):
             words += get_words_list(e, regex)
+            words_by_tabs.append(get_words_list(e, regex))
+            tab_titles.append(Editor.get_prop(e, PROP_TAB_TITLE))
+
+        if option_what_editors==1 or option_what_editors==2:
+            words_by_tabs = []
+            tab_titles = []
+            for e in get_editors(ed_self, lex):
+                words_by_tabs.append(get_words_list(e, regex))
+                tab_titles.append(Editor.get_prop(e, PROP_TAB_TITLE))
+
+        def search_tab(w):
+            if option_what_editors==1 or option_what_editors==2:
+                tabs_found = []
+                for i,words_by_tabs_ in enumerate(words_by_tabs):
+                    for wbt in words_by_tabs_:
+                        if wbt == w:
+                            tabs_found.append(i)
+                if len(tabs_found) > 0:
+                    tabs_titles = '|'
+                    for tf in tabs_found:
+                        tabs_titles += tab_titles[tf] + ' '
+                    return tabs_titles
+                return ''
+            else:
+                return ''
 
         #exclude numbers
         words = [w for w in words if not w.isdigit()]
@@ -276,7 +303,7 @@ class Command:
             else:
                 return PREFIX_TEXT
 
-        words = [get_prefix(w)+'|'+w for w in words
+        words = [get_prefix(w)+'|'+w+search_tab(w) for w in words
                  if (is_text_with_begin(w, word1) or is_text_with_begin(w, '$'+word1))
                  and w not in acp_set # do not repeat words from acp
                  and w!=word1

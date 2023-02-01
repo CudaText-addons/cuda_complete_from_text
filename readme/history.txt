@@ -1,3 +1,6 @@
+2023.02.01
++ add: for what_editors=1 or what_editors=2 the tab name is displayed in the list of results
+
 2022.12.09
 - fix: plugin cannot suggest words for $<caret> in PHP
 
