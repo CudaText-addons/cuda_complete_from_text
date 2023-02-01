@@ -181,7 +181,7 @@ def _read_acp_file(sfile):
     with open(sfile, 'r', encoding='utf-8', errors='ignore') as f:
         lines = f.readlines()
     return lines
-    
+
 def get_acp_words(word1, word2):
 
     sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '.acp')
@@ -277,7 +277,7 @@ class Command:
                 return PREFIX_TEXT
 
         words = [get_prefix(w)+'|'+w for w in words
-                 if is_text_with_begin(w, word1)
+                 if (is_text_with_begin(w, word1) or is_text_with_begin(w, '$'+word1))
                  and w not in acp_set # do not repeat words from acp
                  and w!=word1
                  and w!=(word1+word2)
