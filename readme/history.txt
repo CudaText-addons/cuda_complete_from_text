@@ -1,6 +1,6 @@
 2023.04.05
 + add: for option "what_editors" values 1 and 2, show completion listbox with filenames (code by @ildarkhasanshin and Alexey T.)
-+ add: for word "ttt", suggest also word with dollar-sign "$ttt" (by @ildarkhasanshin)
++ add: for word "$aaa", suggest also word "aaa" (by @ildarkhasanshin)
 + add: command "Config" puts caret on plugin's section
 
 2022.12.09
