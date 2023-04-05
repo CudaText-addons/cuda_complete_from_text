@@ -3,8 +3,8 @@ import re
 from cudatext import *
 import cudax_lib as appx
 
-fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'plugins.ini')
-section = 'complete_from_text'
+FN_CONFIG = os.path.join(app_path(APP_DIR_SETTINGS), 'plugins.ini')
+SECTION = 'complete_from_text'
 PREFIX_TEXT = 'text'
 PREFIX_VAR = 'var'
 nonwords = ''
@@ -13,16 +13,16 @@ def bool_to_str(v): return '1' if v else '0'
 def str_to_bool(s): return s=='1'
 
 # '-' here is none-lexer
-option_lexers = ini_read(fn_config, section, 'lexers', '-,ini files,markdown,restructuredtext,properties')
-option_min_len = int(ini_read(fn_config, section, 'min_len', '3'))
-option_case_sens = str_to_bool(ini_read(fn_config, section, 'case_sens', '1'))
-option_no_cmt = str_to_bool(ini_read(fn_config, section, 'no_comments', '1'))
-option_no_str = str_to_bool(ini_read(fn_config, section, 'no_strings', '1'))
-option_what_editors = int(ini_read(fn_config, section, 'what_editors', '0'))
-option_max_lines = int(ini_read(fn_config, section, 'max_lines', '10000'))
-option_use_acp = str_to_bool(ini_read(fn_config, section, 'use_acp', '1'))
-option_case_split = str_to_bool(ini_read(fn_config, section, 'case_split', '0'))
-option_underscore_split = str_to_bool(ini_read(fn_config, section, 'underscore_split', '0'))
+option_lexers = ini_read(FN_CONFIG, SECTION, 'lexers', '-,ini files,markdown,restructuredtext,properties')
+option_min_len = int(ini_read(FN_CONFIG, SECTION, 'min_len', '3'))
+option_case_sens = str_to_bool(ini_read(FN_CONFIG, SECTION, 'case_sens', '1'))
+option_no_cmt = str_to_bool(ini_read(FN_CONFIG, SECTION, 'no_comments', '1'))
+option_no_str = str_to_bool(ini_read(FN_CONFIG, SECTION, 'no_strings', '1'))
+option_what_editors = int(ini_read(FN_CONFIG, SECTION, 'what_editors', '0'))
+option_max_lines = int(ini_read(FN_CONFIG, SECTION, 'max_lines', '10000'))
+option_use_acp = str_to_bool(ini_read(FN_CONFIG, SECTION, 'use_acp', '1'))
+option_case_split = str_to_bool(ini_read(FN_CONFIG, SECTION, 'case_split', '0'))
+option_underscore_split = str_to_bool(ini_read(FN_CONFIG, SECTION, 'underscore_split', '0'))
 
 
 def get_editors(ed, lexer):
@@ -291,14 +291,22 @@ class Command:
 
     def config(self):
 
-        ini_write(fn_config, section, 'lexers', option_lexers)
-        ini_write(fn_config, section, 'min_len', str(option_min_len))
-        ini_write(fn_config, section, 'case_sens', bool_to_str(option_case_sens))
-        ini_write(fn_config, section, 'no_comments', bool_to_str(option_no_cmt))
-        ini_write(fn_config, section, 'no_strings', bool_to_str(option_no_str))
-        ini_write(fn_config, section, 'what_editors', str(option_what_editors))
-        ini_write(fn_config, section, 'max_lines', str(option_max_lines))
-        ini_write(fn_config, section, 'use_acp', bool_to_str(option_use_acp))
-        ini_write(fn_config, section, 'case_split', bool_to_str(option_case_split))
-        ini_write(fn_config, section, 'underscore_split', bool_to_str(option_underscore_split))
-        file_open(fn_config)
+        ini_write(FN_CONFIG, SECTION, 'lexers', option_lexers)
+        ini_write(FN_CONFIG, SECTION, 'min_len', str(option_min_len))
+        ini_write(FN_CONFIG, SECTION, 'case_sens', bool_to_str(option_case_sens))
+        ini_write(FN_CONFIG, SECTION, 'no_comments', bool_to_str(option_no_cmt))
+        ini_write(FN_CONFIG, SECTION, 'no_strings', bool_to_str(option_no_str))
+        ini_write(FN_CONFIG, SECTION, 'what_editors', str(option_what_editors))
+        ini_write(FN_CONFIG, SECTION, 'max_lines', str(option_max_lines))
+        ini_write(FN_CONFIG, SECTION, 'use_acp', bool_to_str(option_use_acp))
+        ini_write(FN_CONFIG, SECTION, 'case_split', bool_to_str(option_case_split))
+        ini_write(FN_CONFIG, SECTION, 'underscore_split', bool_to_str(option_underscore_split))
+        file_open(FN_CONFIG)
+
+        lines = [ed.get_text_line(i) for i in range(ed.get_line_count())]
+        try:
+            index = lines.index('['+SECTION+']')
+            ed.set_caret(0, index)
+        except:
+            pass
+
