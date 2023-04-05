@@ -1,3 +1,7 @@
+2023.04.05
++ add: for option "what_editors" values 1 and 2, show completion listbox with filenames (code by @ildarkhasanshin and Alexey T.)
++ add: command "Config" puts caret on plugin's section
+
 2022.12.09
 - fix: plugin cannot suggest words for $<caret> in PHP
 
