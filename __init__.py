@@ -260,6 +260,25 @@ class Command:
         for e in get_editors(ed_self, lex):
             words += get_words_list(e, regex)
 
+        if option_what_editors in [1, 2]:
+            words_by_tabs = []
+            tab_titles = []
+            for e in get_editors(ed_self, lex):
+                words_by_tabs.append(get_words_list(e, regex))
+                tab_titles.append(e.get_prop(PROP_TAB_TITLE))
+
+        def search_tab(w):
+            if option_what_editors in [1, 2]:
+                tabs_found = []
+                for i, words_by_tabs_ in enumerate(words_by_tabs):
+                    if w in words_by_tabs_:
+                        tabs_found.append(i)
+                if tabs_found:
+                    return '|' + '; '.join([tab_titles[tf] for tf in tabs_found])
+                return ''
+            else:
+                return ''
+
         #exclude numbers
         words = [w for w in words if not w.isdigit()]
         if words:
@@ -276,8 +295,8 @@ class Command:
             else:
                 return PREFIX_TEXT
 
-        words = [get_prefix(w)+'|'+w for w in words
-                 if is_text_with_begin(w, word1)
+        words = [get_prefix(w)+'|'+w+search_tab(w) for w in words
+                 if (is_text_with_begin(w, word1) or is_text_with_begin(w, '$'+word1))
                  and w not in acp_set # do not repeat words from acp
                  and w!=word1
                  and w!=(word1+word2)
