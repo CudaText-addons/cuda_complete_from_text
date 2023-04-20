@@ -184,11 +184,12 @@ def _read_acp_file(sfile):
     
 def get_acp_words(ed, word1, word2):
 
-    sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '.acp')
+    lex = ed.get_prop(PROP_LEXER_CARET, '')
+    sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', lex+'.acp')
     if os.path.isfile(sfile):
         acp_lines = _read_acp_file(sfile)
     else:
-        sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '_.acp')
+        sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', lex+'_.acp')
         if os.path.isfile(sfile):
             acp_lines = _read_acp_file(sfile)
         else:
