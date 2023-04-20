@@ -227,11 +227,11 @@ def get_acp_words(ed, word1, word2):
     return acp_words, words
 
 
-def get_completions(ed_self, x0, y0, with_acp):
+def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
 
     lex = ed_self.get_prop(PROP_LEXER_FILE, '')
     if lex is None: return
-    if not is_lexer_allowed(lex): return
+    if not ignore_lexer and not is_lexer_allowed(lex): return
 
     global nonwords
     nonwords = appx.get_opt(
