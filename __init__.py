@@ -225,88 +225,94 @@ def get_acp_words(word1, word2):
 
     return acp_words,words
 
-class Command:
 
-    def on_complete(self, ed_self):
-        carets = ed_self.get_carets()
-        if len(carets)!=1: return
-        x0, y0, x1, y1 = carets[0]
-        if y1>=0: return #don't allow selection
+def get_completions(ed_self):
 
-        lex = ed_self.get_prop(PROP_LEXER_FILE, '')
+    carets = ed_self.get_carets()
+    if len(carets)!=1: return
+    x0, y0, x1, y1 = carets[0]
+    if y1>=0: return #don't allow selection
 
-        if lex is None: return
-        if not is_lexer_allowed(lex): return
+    lex = ed_self.get_prop(PROP_LEXER_FILE, '')
 
-        global nonwords
-        nonwords = appx.get_opt(
-            'nonword_chars',
-            '''-+*=/\()[]{}<>"'.,:;~?!@#$%^&|`…''',
-            appx.CONFIG_LEV_ALL,
-            ed_self,
-            lex)
+    if lex is None: return
+    if not is_lexer_allowed(lex): return
 
-        word = get_word(x0, y0)
+    global nonwords
+    nonwords = appx.get_opt(
+        'nonword_chars',
+        '''-+*=/\()[]{}<>"'.,:;~?!@#$%^&|`…''',
+        appx.CONFIG_LEV_ALL,
+        ed_self,
+        lex)
 
-        if not word: return
-        word1, word2 = word
-        if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
+    word = get_word(x0, y0)
 
-        words = []
+    if not word: return
+    word1, word2 = word
+    if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
 
-        regex = get_regex(nonwords)
+    words = []
 
-        #find word list from needed editors
+    regex = get_regex(nonwords)
+
+    #find word list from needed editors
+    for e in get_editors(ed_self, lex):
+        words += get_words_list(e, regex)
+
+    if option_what_editors in [1, 2]:
+        words_by_tabs = []
+        tab_titles = []
         for e in get_editors(ed_self, lex):
-            words += get_words_list(e, regex)
+            words_by_tabs.append(get_words_list(e, regex))
+            tab_titles.append(e.get_prop(PROP_TAB_TITLE))
 
+    def search_tab(w):
         if option_what_editors in [1, 2]:
-            words_by_tabs = []
-            tab_titles = []
-            for e in get_editors(ed_self, lex):
-                words_by_tabs.append(get_words_list(e, regex))
-                tab_titles.append(e.get_prop(PROP_TAB_TITLE))
+            tabs_found = []
+            for i, words_by_tabs_ in enumerate(words_by_tabs):
+                if w in words_by_tabs_:
+                    tabs_found.append(i)
+            if tabs_found:
+                return '|' + '; '.join([tab_titles[tf] for tf in tabs_found])
+            return ''
+        else:
+            return ''
 
-        def search_tab(w):
-            if option_what_editors in [1, 2]:
-                tabs_found = []
-                for i, words_by_tabs_ in enumerate(words_by_tabs):
-                    if w in words_by_tabs_:
-                        tabs_found.append(i)
-                if tabs_found:
-                    return '|' + '; '.join([tab_titles[tf] for tf in tabs_found])
-                return ''
-            else:
-                return ''
+    #exclude numbers
+    words = [w for w in words if not w.isdigit()]
+    if words:
+        words = sorted(list(set(words)))
 
-        #exclude numbers
-        words = [w for w in words if not w.isdigit()]
-        if words:
-            words = sorted(list(set(words)))
+    acp_words,acp_set = get_acp_words(word1, word2)  if option_use_acp else  ([],set())
 
-        acp_words,acp_set = get_acp_words(word1, word2)  if option_use_acp else  ([],set())
+    if not words and not acp_words:
+        return
 
-        if not words and not acp_words:
-            return
+    def get_prefix(w):
+        if w.startswith('$'):
+            return PREFIX_VAR
+        else:
+            return PREFIX_TEXT
 
-        def get_prefix(w):
-            if w.startswith('$'):
-                return PREFIX_VAR
-            else:
-                return PREFIX_TEXT
+    words = [get_prefix(w)+'|'+w+search_tab(w) for w in words
+             if (is_text_with_begin(w, word1) or is_text_with_begin(w, '$'+word1))
+             and w not in acp_set # do not repeat words from acp
+             and w!=word1
+             and w!=(word1+word2)
+             ]
+    #print('word:', word)
+    #print('list:', words)
 
-        words = [get_prefix(w)+'|'+w+search_tab(w) for w in words
-                 if (is_text_with_begin(w, word1) or is_text_with_begin(w, '$'+word1))
-                 and w not in acp_set # do not repeat words from acp
-                 and w!=word1
-                 and w!=(word1+word2)
-                 ]
-        #print('word:', word)
-        #print('list:', words)
+    ed_self.complete('\n'.join(words+acp_words), len(word1), len(word2))
+    return True
 
-        ed_self.complete('\n'.join(words+acp_words), len(word1), len(word2))
-        return True
 
+class Command:
+    
+    def on_complete(self, ed_self):
+        
+        return get_completions(ed_self)
 
     def config(self):
 
