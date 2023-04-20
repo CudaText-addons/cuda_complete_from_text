@@ -224,7 +224,7 @@ def get_acp_words(ed, word1, word2):
             acp_words.append(fstr.format(pre, word, args, descr))
             words.add(word)
 
-    return acp_words,words
+    return acp_words, words
 
 
 def get_completions(ed_self, x0, y0):
@@ -296,11 +296,7 @@ def get_completions(ed_self, x0, y0):
              and w!=word1
              and w!=(word1+word2)
              ]
-    #print('word:', word)
-    #print('list:', words)
-
-    ed_self.complete('\n'.join(words+acp_words), len(word1), len(word2))
-    return True
+    return (words+acp_words, word1, word2)
 
 
 class Command:
@@ -312,7 +308,11 @@ class Command:
         x0, y0, x1, y1 = carets[0]
         if y1>=0: return # don't allow selection
         
-        return get_completions(ed_self, x0, y0)
+        res = get_completions(ed_self, x0, y0)
+        if res is None: return
+        data, word1, word2 = res
+        ed_self.complete('\n'.join(data), len(word1), len(word2))
+        return True
 
     def config(self):
 
