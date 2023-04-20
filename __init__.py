@@ -155,7 +155,7 @@ def get_words_list(ed, regex):
     return l
 
 
-def get_word(x, y):
+def get_word(ed, x, y):
 
     if not 0<=y<ed.get_line_count():
         return
@@ -182,7 +182,7 @@ def _read_acp_file(sfile):
         lines = f.readlines()
     return lines
     
-def get_acp_words(word1, word2):
+def get_acp_words(ed, word1, word2):
 
     sfile = os.path.join(app_path(APP_DIR_DATA), 'autocomplete', ed.get_prop(PROP_LEXER_CARET, '') + '.acp')
     if os.path.isfile(sfile):
@@ -240,7 +240,7 @@ def get_completions(ed_self, x0, y0):
         ed_self,
         lex)
 
-    word = get_word(x0, y0)
+    word = get_word(ed_self, x0, y0)
 
     if not word: return
     word1, word2 = word
@@ -278,7 +278,7 @@ def get_completions(ed_self, x0, y0):
     if words:
         words = sorted(list(set(words)))
 
-    acp_words,acp_set = get_acp_words(word1, word2)  if option_use_acp else  ([],set())
+    acp_words, acp_set = get_acp_words(ed_self, word1, word2) if option_use_acp else ([], set())
 
     if not words and not acp_words:
         return
