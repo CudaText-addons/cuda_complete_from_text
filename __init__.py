@@ -227,7 +227,7 @@ def get_acp_words(ed, word1, word2):
     return acp_words, words
 
 
-def get_completions(ed_self, x0, y0):
+def get_completions(ed_self, x0, y0, with_acp):
 
     lex = ed_self.get_prop(PROP_LEXER_FILE, '')
     if lex is None: return
@@ -279,7 +279,7 @@ def get_completions(ed_self, x0, y0):
     if words:
         words = sorted(list(set(words)))
 
-    acp_words, acp_set = get_acp_words(ed_self, word1, word2) if option_use_acp else ([], set())
+    acp_words, acp_set = get_acp_words(ed_self, word1, word2) if with_acp else ([], set())
 
     if not words and not acp_words:
         return
@@ -296,7 +296,7 @@ def get_completions(ed_self, x0, y0):
              and w!=word1
              and w!=(word1+word2)
              ]
-    return (words+acp_words, word1, word2)
+    return (words, acp_words, word1, word2)
 
 
 class Command:
@@ -308,10 +308,10 @@ class Command:
         x0, y0, x1, y1 = carets[0]
         if y1>=0: return # don't allow selection
         
-        res = get_completions(ed_self, x0, y0)
+        res = get_completions(ed_self, x0, y0, option_use_acp)
         if res is None: return
-        data, word1, word2 = res
-        ed_self.complete('\n'.join(data), len(word1), len(word2))
+        words, acp_words, word1, word2 = res
+        ed_self.complete('\n'.join(words+acp_words), len(word1), len(word2))
         return True
 
     def config(self):
