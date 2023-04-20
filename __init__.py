@@ -260,7 +260,8 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
         tab_titles = []
         for e in get_editors(ed_self, lex):
             words_by_tabs.append(get_words_list(e, regex))
-            tab_titles.append(e.get_prop(PROP_TAB_TITLE))
+            title = e.get_prop(PROP_TAB_TITLE).replace('|', '/')
+            tab_titles.append(title)
 
     def search_tab(w):
         if option_what_editors in [1, 2]:
