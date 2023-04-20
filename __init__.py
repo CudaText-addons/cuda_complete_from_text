@@ -226,15 +226,9 @@ def get_acp_words(word1, word2):
     return acp_words,words
 
 
-def get_completions(ed_self):
-
-    carets = ed_self.get_carets()
-    if len(carets)!=1: return
-    x0, y0, x1, y1 = carets[0]
-    if y1>=0: return #don't allow selection
+def get_completions(ed_self, x0, y0):
 
     lex = ed_self.get_prop(PROP_LEXER_FILE, '')
-
     if lex is None: return
     if not is_lexer_allowed(lex): return
 
@@ -311,8 +305,13 @@ def get_completions(ed_self):
 class Command:
     
     def on_complete(self, ed_self):
+
+        carets = ed_self.get_carets()
+        if len(carets)!=1: return # don't allow multi-carets
+        x0, y0, x1, y1 = carets[0]
+        if y1>=0: return # don't allow selection
         
-        return get_completions(ed_self)
+        return get_completions(ed_self, x0, y0)
 
     def config(self):
 
