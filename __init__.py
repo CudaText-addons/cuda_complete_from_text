@@ -296,11 +296,11 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
         else:
             return PREFIX_TEXT
 
+    word1and2 = word1+word2
     words = [get_prefix(w)+'|'+w+search_tab(w) for w in words
-             if (is_text_with_begin(w, word1) or is_text_with_begin(w, '$'+word1))
-             and w not in acp_set # do not repeat words from acp
+             if w not in acp_set # do not repeat words from .acp
              and w!=word1
-             and w!=(word1+word2)
+             and w!=word1and2
              ]
     return (words, acp_words, word1, word2)
 
