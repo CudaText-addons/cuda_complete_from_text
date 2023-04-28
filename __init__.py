@@ -247,21 +247,18 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
     word1, word2 = word
     if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
 
-    words = []
-
     regex = get_regex(nonwords)
 
-    #find word list from needed editors
+    words_by_tabs = []
+    tab_titles = []
     for e in get_editors(ed_self, lex):
-        words += get_words_list(e, regex)
+        words_by_tabs.append(get_words_list(e, regex))
+        title = e.get_prop(PROP_TAB_TITLE).replace('|', '/')
+        tab_titles.append(title)
 
-    if option_what_editors in [1, 2]:
-        words_by_tabs = []
-        tab_titles = []
-        for e in get_editors(ed_self, lex):
-            words_by_tabs.append(get_words_list(e, regex))
-            title = e.get_prop(PROP_TAB_TITLE).replace('|', '/')
-            tab_titles.append(title)
+    words = []
+    for w in words_by_tabs:
+        words += w
 
     def search_tab(w):
         if option_what_editors in [1, 2]:
