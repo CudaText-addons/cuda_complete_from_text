@@ -120,17 +120,23 @@ def spl_match(begin, words):
     return False
 
 
-def get_regex(nonwords):
-    '''main regex to find words, considering Cud option nonword_chars'''
+def escape_regex(s):
 
-    specials = '$%#-'
+    res = ''
+    for ch in s:
+        if ch in '$^#-+|.':
+            res += '\\'
+        res += ch
+    return res
 
-    cls = r'\w'
-    for ch in specials:
+def get_regex(begin, nonword):
+
+    w_content = r'\w'
+    for ch in '$^#-+|':
         if ch not in nonwords:
-            cls += '\\'+ch
+            w_content += escape_regex(ch)
 
-    regex = r'[%s]{%d,}' % (cls, option_min_len)
+    regex = r'\$?\b' + escape_regex(begin) + '[' + w_content + ']+'
     #print('regex:', repr(regex))
     return regex
 
@@ -248,7 +254,7 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
     if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
     if word1[0].isdigit(): return
 
-    regex = get_regex(nonwords)
+    regex = get_regex(word1, nonwords)
 
     words_by_tabs = []
     tab_titles = []
