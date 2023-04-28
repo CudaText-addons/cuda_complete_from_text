@@ -124,7 +124,7 @@ def escape_regex(s):
 
     res = ''
     for ch in s:
-        if ch in '$^#-+|.':
+        if ch in '$^#-+|.?*()[]{}':
             res += '\\'
         res += ch
     return res
