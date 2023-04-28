@@ -246,6 +246,7 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
     if not word: return
     word1, word2 = word
     if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
+    if word1[0].isdigit(): return
 
     regex = get_regex(nonwords)
 
@@ -273,7 +274,8 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
             return ''
 
     #exclude numbers
-    words = [w for w in words if not w.isdigit()]
+    #words = [w for w in words if not w.isdigit()]
+
     if words:
         words = sorted(list(set(words)))
 
