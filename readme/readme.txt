@@ -4,8 +4,7 @@ Gives completion listbox with words from current document, starting with the cur
 E.g. if you typed "op", it may show words "operations", "opinion", "option" etc.
 Plugin cannot work with multi-carets. 
 
-Plugin has options in the config file, call menu item "Options / Settings-pligins / Complete From Text".
-Options are: 
+Plugin has options in the config file (settings/plugins.ini). To open the config file, call menu item "Options / Settings-pligins / Complete From Text". Options are: 
 
 - 'lexers': comma-separated lexer names, ie for which lexers to work; specify none-lexer as '-'.
 - 'min_len': minimal word length, words of smaller length will be ignored.
