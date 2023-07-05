@@ -17,7 +17,8 @@ Options are:
     0: only current document.
     1: all opened documents.
     2: all opened documents with the same lexer.
-- 'use_acp': add suggestions from autocomplete files in 'data/autocomplete'
+- 'use_acp': add suggestions from autocomplete files 'data/autocomplete/*.acp'
+- 'show_acp_first': when option is On, items from 'data/autocomplete/*.acp' files will be listed first in the completion listbox
 - 'case_split': expands suggestions, autocompletion for 'AB' will include 'AzzBzz', so to get 'ValueError' just typing 'VE' (or 'VaE', 'VErr', 'ValErr' etc.) and calling on autocompletion will suggest it.
 - 'underscore_split': expands suggestions, autocompletion for 'AB' will include 'AZZ_BZZ', so to get 'supports_bytes_environ' just typing 'sb' (or 'sbe', 'supbyenv' etc.) and calling on autocompletion will suggest it. 
 

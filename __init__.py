@@ -21,6 +21,7 @@ option_no_str = str_to_bool(ini_read(FN_CONFIG, SECTION, 'no_strings', '1'))
 option_what_editors = int(ini_read(FN_CONFIG, SECTION, 'what_editors', '0'))
 option_max_lines = int(ini_read(FN_CONFIG, SECTION, 'max_lines', '10000'))
 option_use_acp = str_to_bool(ini_read(FN_CONFIG, SECTION, 'use_acp', '1'))
+option_show_acp_first = str_to_bool(ini_read(FN_CONFIG, SECTION, 'show_acp_first', '0'))
 option_case_split = str_to_bool(ini_read(FN_CONFIG, SECTION, 'case_split', '0'))
 option_underscore_split = str_to_bool(ini_read(FN_CONFIG, SECTION, 'underscore_split', '0'))
 
@@ -317,7 +318,8 @@ class Command:
         res = get_completions(ed_self, x0, y0, option_use_acp)
         if res is None: return
         words, acp_words, word1, word2 = res
-        ed_self.complete('\n'.join(words+acp_words), len(word1), len(word2))
+        word_list = acp_words+words if option_show_acp_first else words+acp_words 
+        ed_self.complete('\n'.join(word_list), len(word1), len(word2))
         return True
 
     def config(self):
@@ -330,6 +332,7 @@ class Command:
         ini_write(FN_CONFIG, SECTION, 'what_editors', str(option_what_editors))
         ini_write(FN_CONFIG, SECTION, 'max_lines', str(option_max_lines))
         ini_write(FN_CONFIG, SECTION, 'use_acp', bool_to_str(option_use_acp))
+        ini_write(FN_CONFIG, SECTION, 'show_acp_first', bool_to_str(option_show_acp_first))
         ini_write(FN_CONFIG, SECTION, 'case_split', bool_to_str(option_case_split))
         ini_write(FN_CONFIG, SECTION, 'underscore_split', bool_to_str(option_underscore_split))
         file_open(FN_CONFIG)

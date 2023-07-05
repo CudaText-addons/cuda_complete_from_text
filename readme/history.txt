@@ -1,3 +1,6 @@
+2023.07.05
++ add: option "show_acp_first"
+
 2023.04.28
 + add: optimization for big files
 
