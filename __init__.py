@@ -13,7 +13,7 @@ def bool_to_str(v): return '1' if v else '0'
 def str_to_bool(s): return s=='1'
 
 # '-' here is none-lexer
-option_lexers = ini_read(FN_CONFIG, SECTION, 'lexers', '-,ini files,markdown,restructuredtext,properties')
+option_lexers = ini_read(FN_CONFIG, SECTION, 'lexers', '-,ini files ^,markdown,restructuredtext,properties')
 option_min_len = int(ini_read(FN_CONFIG, SECTION, 'min_len', '3'))
 option_case_sens = str_to_bool(ini_read(FN_CONFIG, SECTION, 'case_sens', '1'))
 option_no_cmt = str_to_bool(ini_read(FN_CONFIG, SECTION, 'no_comments', '1'))
