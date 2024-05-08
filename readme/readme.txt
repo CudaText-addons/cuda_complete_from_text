@@ -20,6 +20,8 @@ Plugin has options in the config file (settings/plugins.ini). To open the config
 - 'show_acp_first': when option is On, items from 'data/autocomplete/*.acp' files will be listed first in the completion listbox
 - 'case_split': expands suggestions, autocompletion for 'AB' will include 'AzzBzz', so to get 'ValueError' just typing 'VE' (or 'VaE', 'VErr', 'ValErr' etc.) and calling on autocompletion will suggest it.
 - 'underscore_split': expands suggestions, autocompletion for 'AB' will include 'AZZ_BZZ', so to get 'supports_bytes_environ' just typing 'sb' (or 'sbe', 'supbyenv' etc.) and calling on autocompletion will suggest it. 
+- 'fuzzy_search': activates fuzzy matching for words; if it's on it has bigger priority than 'case_split' and 'underscore_split'.
+
 
 Plugin supports CudaText option "nonword_chars", so for example words with '$' can be added,
 if option is configured so.
