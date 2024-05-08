@@ -1,3 +1,6 @@
+2024.05.08
+- fix: options "case_sens" / "case_split" / "underscore_split" were not used for words from document
+
 2024.05.02
 * change: changed default of "no_strings" option to "0" (mainly for Markdown)
 
