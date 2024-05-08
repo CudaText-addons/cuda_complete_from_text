@@ -255,7 +255,8 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
     if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
     if word1[0].isdigit(): return
 
-    regex = get_regex(word1, nonwords)
+    regex = get_regex(word1[0], nonwords)
+    #print('regex:', regex)
 
     words_by_tabs = []
     tab_titles = []
@@ -263,6 +264,7 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
         words_by_tabs.append(get_words_list(e, regex))
         title = e.get_prop(PROP_TAB_TITLE).replace('|', '/')
         tab_titles.append(title)
+    #print('words_by_tabs:', words_by_tabs)
 
     words = []
     for w in words_by_tabs:
@@ -298,12 +300,17 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
             return PREFIX_TEXT
 
     word1and2 = word1+word2
-    words = [get_prefix(w)+'|'+w+search_tab(w) for w in words
+    words = [w for w in words
              if w not in acp_set # do not repeat words from .acp
              and w!=word1
              and w!=word1and2
              ]
-    return (words, acp_words, word1, word2)
+    words = [w for w in words
+             if is_text_with_begin(w, word1)
+             ]
+
+    words_decorated = [get_prefix(w)+'|'+w+search_tab(w) for w in words]
+    return (words_decorated, acp_words, word1, word2)
 
 
 class Command:
