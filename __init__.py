@@ -24,6 +24,7 @@ option_use_acp = str_to_bool(ini_read(FN_CONFIG, SECTION, 'use_acp', '1'))
 option_show_acp_first = str_to_bool(ini_read(FN_CONFIG, SECTION, 'show_acp_first', '0'))
 option_case_split = str_to_bool(ini_read(FN_CONFIG, SECTION, 'case_split', '0'))
 option_underscore_split = str_to_bool(ini_read(FN_CONFIG, SECTION, 'underscore_split', '0'))
+option_fuzzy = str_to_bool(ini_read(FN_CONFIG, SECTION, 'fuzzy_search', '1'))
 
 
 def get_editors(ed, lexer):
@@ -51,7 +52,22 @@ def isword(s):
     return s not in ' \t'+nonwords
 
 
+def is_fuzzy_match(stext, sfind):
+    '''Ported from CudaText's Pascal code''' 
+    stext = stext.upper()
+    sfind = sfind.upper()
+    n = -1
+    for ch in sfind:
+        n = stext.find(ch, n+1)
+        if n<0:
+            return False
+    return True
+
+
 def is_text_with_begin(s, begin):
+
+    if option_fuzzy:
+        return is_fuzzy_match(s, begin)
 
     if option_case_split or option_underscore_split:
         if option_case_split  and  s[0] == begin[0]:
@@ -340,6 +356,7 @@ class Command:
         ini_write(FN_CONFIG, SECTION, 'max_lines', str(option_max_lines))
         ini_write(FN_CONFIG, SECTION, 'use_acp', bool_to_str(option_use_acp))
         ini_write(FN_CONFIG, SECTION, 'show_acp_first', bool_to_str(option_show_acp_first))
+        ini_write(FN_CONFIG, SECTION, 'fuzzy_search', bool_to_str(option_fuzzy))
         ini_write(FN_CONFIG, SECTION, 'case_split', bool_to_str(option_case_split))
         ini_write(FN_CONFIG, SECTION, 'underscore_split', bool_to_str(option_underscore_split))
         file_open(FN_CONFIG)

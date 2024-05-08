@@ -1,4 +1,5 @@
 2024.05.08
++ add: option "fuzzy_search", it uses the same fuzzy-search algorithm as CudaText
 - fix: options "case_sens" / "case_split" / "underscore_split" were not used for words from document
 
 2024.05.02
