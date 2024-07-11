@@ -1,3 +1,7 @@
+2024.07.10
++ add: improved speed on big files, e.g. on 90K-lines test file time is changed from 6 sec to 2 sec
+* change: removed options "no_comments" / "no_strings" (impossible to implement if we search for words by Python regex)
+
 2024.05.08
 + add: option "fuzzy_search" (default: on)
 - fix: options "case_sens" / "case_split" / "underscore_split" were not used for words from document

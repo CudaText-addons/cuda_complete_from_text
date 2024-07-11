@@ -16,8 +16,8 @@ def str_to_bool(s): return s=='1'
 option_lexers = ini_read(FN_CONFIG, SECTION, 'lexers', '-,ini files ^,markdown,restructuredtext,properties')
 option_min_len = int(ini_read(FN_CONFIG, SECTION, 'min_len', '3'))
 option_case_sens = str_to_bool(ini_read(FN_CONFIG, SECTION, 'case_sens', '1'))
-option_no_cmt = str_to_bool(ini_read(FN_CONFIG, SECTION, 'no_comments', '1'))
-option_no_str = str_to_bool(ini_read(FN_CONFIG, SECTION, 'no_strings', '0'))
+#option_no_cmt = str_to_bool(ini_read(FN_CONFIG, SECTION, 'no_comments', '1'))
+#option_no_str = str_to_bool(ini_read(FN_CONFIG, SECTION, 'no_strings', '0'))
 option_what_editors = int(ini_read(FN_CONFIG, SECTION, 'what_editors', '0'))
 option_max_lines = int(ini_read(FN_CONFIG, SECTION, 'max_lines', '10000'))
 option_use_acp = str_to_bool(ini_read(FN_CONFIG, SECTION, 'use_acp', '1'))
@@ -162,6 +162,7 @@ def get_words_list(ed, regex):
     if ed.get_line_count() > option_max_lines:
         return []
 
+    '''
     if option_no_cmt and option_no_str:
         ops = 'T6'
     elif option_no_cmt:
@@ -172,9 +173,13 @@ def get_words_list(ed, regex):
         ops = ''
 
     res = ed.action(EDACTION_FIND_ALL, regex, 'r'+ops) or []
-
     l = [ed.get_text_substr(*r) for r in res]
+    # slower than via python regex, 3 times
+    '''
+
+    l = re.findall(regex, ed.get_text_all(), 0)
     l = list(set(l))
+
     return l
 
 
@@ -350,8 +355,8 @@ class Command:
         ini_write(FN_CONFIG, SECTION, 'lexers', option_lexers)
         ini_write(FN_CONFIG, SECTION, 'min_len', str(option_min_len))
         ini_write(FN_CONFIG, SECTION, 'case_sens', bool_to_str(option_case_sens))
-        ini_write(FN_CONFIG, SECTION, 'no_comments', bool_to_str(option_no_cmt))
-        ini_write(FN_CONFIG, SECTION, 'no_strings', bool_to_str(option_no_str))
+        #ini_write(FN_CONFIG, SECTION, 'no_comments', bool_to_str(option_no_cmt))
+        #ini_write(FN_CONFIG, SECTION, 'no_strings', bool_to_str(option_no_str))
         ini_write(FN_CONFIG, SECTION, 'what_editors', str(option_what_editors))
         ini_write(FN_CONFIG, SECTION, 'max_lines', str(option_max_lines))
         ini_write(FN_CONFIG, SECTION, 'use_acp', bool_to_str(option_use_acp))

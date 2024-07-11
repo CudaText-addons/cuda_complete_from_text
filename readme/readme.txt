@@ -10,8 +10,6 @@ Plugin has options in the config file (settings/plugins.ini). To open the config
 - 'min_len': minimal word length, words of smaller length will be ignored.
 - 'max_lines': if document has bigger count of lines, ignore this document.    
 - 'case_sens': case-sensitive; words starting with 'A' will be ignored when you typed 'a'.
-- 'no_comments': ignore words inside "syntax comments" (lexer specific).
-- 'no_strings': ignore words inside "syntax strings" (lexer specific).
 - 'what_editors': which documents (ie UI tabs) to read to get words. Values:
     0: only current document.
     1: all opened documents.
