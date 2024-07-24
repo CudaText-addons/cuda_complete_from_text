@@ -149,7 +149,7 @@ def escape_regex(s):
 def get_regex(begin, nonwords):
 
     w_content = r'\w'
-    for ch in '$^#-+|':
+    for ch in '$^#-+|,.;:*/':
         if ch not in nonwords:
             w_content += escape_regex(ch)
 
