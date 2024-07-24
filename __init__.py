@@ -153,7 +153,8 @@ def get_regex(begin, nonword):
         if ch not in nonwords:
             w_content += escape_regex(ch)
 
-    regex = r'\$?\b' + escape_regex(begin) + '[' + w_content + ']+'
+    repeats = max(1, option_min_len-len(begin))
+    regex = r'\$?\b' + escape_regex(begin) + '[' + w_content + ']{' + str(repeats) + ',}'
     #print('regex:', repr(regex))
     return regex
 
