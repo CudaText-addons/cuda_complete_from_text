@@ -1,3 +1,6 @@
+2024.07.24
+- fix: option "min_len" was ignored, regression
+
 2024.07.10
 + add: improved speed on big files, e.g. on 90K-lines test file time is changed from 6 sec to 2 sec
 * change: removed options "no_comments" / "no_strings" (impossible to implement if we search for words by Python regex)
