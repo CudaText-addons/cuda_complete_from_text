@@ -5,6 +5,7 @@ import cudax_lib as appx
 
 FN_CONFIG = os.path.join(app_path(APP_DIR_SETTINGS), 'plugins.ini')
 SECTION = 'complete_from_text'
+NONWORDS_DEFAULT = '''-+*=/\()[]{}<>"'.,:;~?!@#$%^&|`…''' # without space/tab
 nonwords = ''
 
 def bool_to_str(v): return '1' if v else '0'
@@ -147,7 +148,7 @@ def escape_regex(s):
 def get_regex(begin, nonwords):
 
     w_content = r'\w'
-    for ch in '$^#-+|,.;:*/':
+    for ch in NONWORDS_DEFAULT:
         if ch not in nonwords:
             w_content += escape_regex(ch)
 
@@ -265,7 +266,7 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
     global nonwords
     nonwords = appx.get_opt(
         'nonword_chars',
-        '''-+*=/\()[]{}<>"'.,:;~?!@#$%^&|`…''',
+        NONWORDS_DEFAULT,
         appx.CONFIG_LEV_ALL,
         ed_self,
         lex)
