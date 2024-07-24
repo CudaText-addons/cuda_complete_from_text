@@ -5,8 +5,6 @@ import cudax_lib as appx
 
 FN_CONFIG = os.path.join(app_path(APP_DIR_SETTINGS), 'plugins.ini')
 SECTION = 'complete_from_text'
-PREFIX_TEXT = 'text'
-PREFIX_VAR = 'var'
 nonwords = ''
 
 def bool_to_str(v): return '1' if v else '0'
@@ -317,10 +315,7 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
         return
 
     def get_prefix(w):
-        if w.startswith('$'):
-            return PREFIX_VAR
-        else:
-            return PREFIX_TEXT
+        return 'var' if w.startswith('$') else 'text'
 
     word1and2 = word1+word2
     words = [w for w in words
