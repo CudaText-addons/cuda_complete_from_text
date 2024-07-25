@@ -278,7 +278,8 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
     if not word1: return # to fix https://github.com/Alexey-T/CudaText/issues/3175
     if word1[0].isdigit(): return
 
-    regex = get_regex(word1, nonwords)
+    # filter by word1[0], not by entire word1, because fuzzy must be supported
+    regex = get_regex(word1[0], nonwords)
 
     words_by_tabs = []
     tab_titles = []
