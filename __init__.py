@@ -51,6 +51,14 @@ def isword(s):
     return s not in ' \t'+nonwords
 
 
+def is_plain_match(stext, sfind):
+
+    if option_case_sens:
+        return stext.startswith(sfind)
+    else:
+        return stext.upper().startswith(sfind.upper())
+
+
 def is_fuzzy_match(stext, sfind):
     '''Ported from CudaText's Pascal code''' 
     stext = stext.upper()
@@ -231,7 +239,8 @@ def get_acp_words(ed, word1, word2):
     if len(acp_lines) > 0  and  acp_lines[0].startswith('#chars'):
         del acp_lines[0]
 
-    acp_words = []
+    acp_words_plain = []
+    acp_words_fuzzy = []
     words = set()
     fstr = '{}|{}|{}'+chr(9)+'{}'
     for line in acp_lines:
@@ -252,9 +261,14 @@ def get_acp_words(ed, word1, word2):
             continue
         if is_text_with_begin(word, word1)  and  word != word1  and  word != target_word:
             word = word.replace('%20', ' ')
-            acp_words.append(fstr.format(pre, word, args, descr))
+            s = fstr.format(pre, word, args, descr)
+            if is_plain_match(word, word1):
+                acp_words_plain.append(s)
+            else:
+                acp_words_fuzzy.append(s)
             words.add(word)
 
+    acp_words = acp_words_plain + acp_words_fuzzy
     return acp_words, words
 
 
@@ -329,6 +343,13 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
     words = [w for w in words
              if is_text_with_begin(w, word1)
              ]
+    words_plain = [w for w in words
+             if is_plain_match(w, word1)
+             ]
+    words_fuzzy = [w for w in words
+             if not is_plain_match(w, word1)
+             ]
+    words = words_plain + words_fuzzy
 
     words_decorated = [get_prefix(w)+'|'+w+search_tab(w) for w in words]
     return (words_decorated, acp_words, word1, word2)

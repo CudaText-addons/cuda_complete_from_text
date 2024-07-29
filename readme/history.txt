@@ -1,3 +1,6 @@
+2024.07.29
++ add: for fuzzy search, show fuzzy matches at the end of list (by @iconv)
+
 2024.07.24
 - fix: option "min_len" was ignored, regression
 
