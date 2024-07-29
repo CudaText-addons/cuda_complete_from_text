@@ -179,7 +179,8 @@ def get_words_list(ed, regex):
     # slower than via python regex, 3 times
     '''
 
-    l = re.findall(regex, ed.get_text_all(), 0)
+    re_flags = re.I if not option_case_sens else 0
+    l = re.findall(regex, ed.get_text_all(), re_flags)
     l = list(set(l))
 
     return l
