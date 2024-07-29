@@ -343,12 +343,15 @@ def get_completions(ed_self, x0, y0, with_acp, ignore_lexer=False):
     words = [w for w in words
              if is_text_with_begin(w, word1)
              ]
-    words_plain = [w for w in words
-             if is_plain_match(w, word1)
-             ]
-    words_fuzzy = [w for w in words
-             if not is_plain_match(w, word1)
-             ]
+
+    words_plain = []
+    words_fuzzy = []
+    for w in words:
+        if is_plain_match(w, word1):
+            words_plain.append(w)
+        else:
+            words_fuzzy.append(w)
+
     words = words_plain + words_fuzzy
 
     words_decorated = [get_prefix(w)+'|'+w+search_tab(w) for w in words]
@@ -393,4 +396,3 @@ class Command:
             ed.set_caret(0, index)
         except:
             pass
-
